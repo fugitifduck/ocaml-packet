@@ -71,7 +71,7 @@ module Tcp : sig
       ; rst : bool (** Reset the connection. *)
       ; syn : bool (** Synchronize sequence numbers. *)
       ; fin : bool (** No more data from sender. *)
-      }
+      } with sexp
 
   end
 
@@ -86,7 +86,7 @@ module Tcp : sig
     ; chksum : int8  (** Checksum. *)
     ; urgent : int8 (** Urgent pointer. *)
     ; payload : bytes (** TCP payload. *)
-    }
+    } with sexp
 
 end
 
@@ -98,7 +98,7 @@ module Udp : sig
     ; dst : tpPort  (** Destination port. *)
     ; chksum : int16  (** Checksum. *)
     ; payload : bytes (** UDP payload. *)
-    }
+    } with sexp
 
 end
 
@@ -110,7 +110,7 @@ module Icmp : sig
     ; code : int8 (** ICMP subtype. *)
     ; chksum : int16 (** Checksum. *)
     ; payload : bytes (** ICMP payload. *)
-    }
+    } with sexp
 
 end
 
@@ -123,7 +123,7 @@ module Dns : sig
       { name : string
       ; typ : int16
       ; class_ : int16
-      }
+      } with sexp
   end
 
   (* DNS Resource Records *)
@@ -134,7 +134,7 @@ module Dns : sig
       ; class_ : int16
       ; ttl : int (* TTL is a signed 32-bit int *)
       ; rdata : bytes
-      }
+      } with sexp
   end
 
   type t =
@@ -144,7 +144,7 @@ module Dns : sig
     ; answers : Rr.t list
     ; authority : Rr.t list
     ; additional : Rr.t list
-    }
+    } with sexp
 
   (** [serialize pkt] serializes [pkt] into a bit sequence, suitable
       for placing in a UDP or TCP payload. *)
@@ -158,7 +158,7 @@ module Igmp1and2 : sig
     mrt: int8; (** Maximum response time. *)
     chksum : int16; (** Checksum. *)
     addr : nwAddr; (** IGMP group address. *)
-  }
+  } with sexp
 
 end
 
@@ -170,13 +170,13 @@ module Igmp3 : sig
       typ : int8; (** Group Record type. *)
       addr : nwAddr; (** Multicast Group. *)
       sources : nwAddr list; (** List of sources addresses. *)
-    }
+    } with sexp
   end
 
   type t = {
     chksum : int16; (** Checksum. *)
     grs : GroupRec.t list; (** Group records. *)
-  }
+  } with sexp
 
 end
 
@@ -187,11 +187,12 @@ module Igmp : sig
     | Igmp1and2 of Igmp1and2.t
     | Igmp3 of Igmp3.t
     | Unparsable of (int8 * bytes)
+  with sexp
 
   type t = {
     ver_and_typ : int8; (** IGMP version/type. *)
     msg : msg (** enclosed IGMP message *)
-  }
+  } with sexp
 
 end
 
@@ -208,6 +209,7 @@ module Ip : sig
     | Icmp of Icmp.t
     | Igmp of Igmp.t
     | Unparsable of (nwProto * bytes)
+  with sexp
 
   module Flags : sig
   (** [Flags] is the type of IPv4 flags. *)
@@ -215,7 +217,7 @@ module Ip : sig
     type t =
       { df : bool (** Don't fragment. *)
       ; mf : bool (** More fragments. *)
-      }
+      } with sexp
 
   end
 
@@ -230,7 +232,7 @@ module Ip : sig
     ; dst : nwAddr (** IP destination address. *)
     ; options : bytes (** Uninterpreted IP options. *)
     ; tp : tp (** Packet payload. *)
-    }
+    } with sexp
 
 end
 
@@ -240,6 +242,7 @@ module Arp : sig
   type t =
     | Query of dlAddr * nwAddr * nwAddr
     | Reply of dlAddr * nwAddr * dlAddr * nwAddr
+  with sexp
 
 end
 
@@ -249,6 +252,7 @@ type nw =
   | Arp of Arp.t (** Address Resolution Protocol (ARP). *)
   | Unparsable of (dlTyp * bytes) (** The EtherType code accompanied by the 
                                   uninterpreted ethernet payload. *)
+  with sexp
 
 (** [packet] is the type of ethernet data packets. *)
 type packet = 
@@ -261,6 +265,7 @@ type packet =
                           [None]. *)
   ; nw : nw (** Ethernet payload. *)
   }
+  with sexp
 
 (** {9:accs Accessors} *)
 

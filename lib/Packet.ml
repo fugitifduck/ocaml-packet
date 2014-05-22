@@ -117,7 +117,7 @@ module Tcp = struct
       ; psh : bool
       ; rst : bool
       ; syn : bool
-      ; fin : bool }
+      ; fin : bool } with sexp
 
     let to_string f = Printf.sprintf
       "{ ns = %B; cwr = %B; ece = %B; urg = %B; ack = %B; psh = %B; rst = %B; \
@@ -160,7 +160,7 @@ module Tcp = struct
     ; window : int16
     ; chksum : int8
     ; urgent : int8
-    ; payload : bytes }
+    ; payload : bytes } with sexp
 
   let format fmt v =
     let open Format in
@@ -239,6 +239,7 @@ module Udp = struct
     ; dst : tpPort
     ; chksum : int16
     ; payload : bytes }
+  with sexp
 
   let format fmt v =
     let open Format in
@@ -283,7 +284,7 @@ module Icmp = struct
     code : int8;
     chksum : int16;
     payload : bytes
-  }
+  } with sexp
 
   cstruct icmp { 
     uint8_t typ;
@@ -367,7 +368,7 @@ module Dns = struct
       name : string;
       typ : int16;
       class_ : int16
-    }
+    } with sexp
 
     cstruct qd {
       (* preceeded by name *)
@@ -408,7 +409,7 @@ module Dns = struct
       class_ : int16;
       ttl : int; (* TTL is signed 32-bit int *)
       rdata : bytes
-    }
+    } with sexp
 
     cstruct rr {
       (* preceeded by name *)
@@ -461,6 +462,7 @@ module Dns = struct
     ; answers : Rr.t list
     ; authority : Rr.t list
     ; additional : Rr.t list }
+    with sexp
 
   let format fmt v =
     let open Format in
@@ -540,7 +542,7 @@ module Igmp1and2 = struct
     mrt: int8;
     chksum : int16;
     addr : nwAddr;
-  }
+  } with sexp
 
   cstruct igmp1and2 {
     uint8_t mrt;
@@ -584,7 +586,7 @@ module Igmp3 = struct
       typ : int8;
       addr : nwAddr;
       sources : nwAddr list;
-    }
+    } with sexp
 
     cstruct grouprec {
       uint8_t typ;
@@ -628,7 +630,7 @@ module Igmp3 = struct
   type t = {
     chksum : int16;
     grs : GroupRec.t list;
-  }
+  } with sexp
 
   cstruct igmp3 {
     uint8_t reserved1;
@@ -681,11 +683,12 @@ module Igmp = struct
     | Igmp1and2 of Igmp1and2.t
     | Igmp3 of Igmp3.t
     | Unparsable of (int8 * bytes)
+    with sexp
 
   type t = {
     ver_and_typ : int8;
     msg : msg
-  }
+  } with sexp
 
   cenum igmp_msg_type {
     IGMP_MSG_QUERY = 0x11;
@@ -764,6 +767,7 @@ module Ip = struct
     | Icmp of Icmp.t
     | Igmp of Igmp.t
     | Unparsable of (nwProto * bytes)
+    with sexp
 
   module Flags = struct
   (** [Flags] is the type of IPv4 flags. *)
@@ -771,7 +775,7 @@ module Ip = struct
     type t =
       { df : bool (** Don't fragment. *)
       ; mf : bool (** More fragments. *)
-      }
+      } with sexp
 
     let to_string v = Printf.sprintf "{ df = %B; mf = %B }" v.df v.mf
 
@@ -798,7 +802,7 @@ module Ip = struct
     dst : nwAddr;
     options : bytes;
     tp : tp
-  }
+  } with sexp
 
   let format_tp fmt = function
     | Tcp tcp -> Tcp.format fmt tcp
@@ -929,6 +933,7 @@ module Arp = struct
   type t =
     | Query of dlAddr * nwAddr * nwAddr
     | Reply of dlAddr * nwAddr * dlAddr * nwAddr
+    with sexp
 
   let format fmt v =
     let open Format in
@@ -1017,6 +1022,7 @@ type nw =
   | Ip of Ip.t
   | Arp of Arp.t
   | Unparsable of (dlTyp * bytes)
+  with sexp
 
 type packet = {
   dlSrc : dlAddr;
@@ -1025,7 +1031,7 @@ type packet = {
   dlVlanDei : dlVlanDei;
   dlVlanPcp : dlVlanPcp;
   nw : nw
-}
+} with sexp
 
 let format_nw fmt v =
   let open Format in
