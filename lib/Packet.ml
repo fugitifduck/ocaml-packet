@@ -1,3 +1,6 @@
+open Sexplib 
+open Sexplib.Std 
+
 let icmp_code = 0x01
 let igmp_code = 0x02
 let tcp_code = 0x06
@@ -60,31 +63,34 @@ let string_of_mac (x:int64) : string =
     (get_byte x 5) (get_byte x 4) (get_byte x 3)
     (get_byte x 2) (get_byte x 1) (get_byte x 0)
 
-type bytes = Cstruct.t
+let bytes_of_sexp s = Cstruct.of_string (Sexp.to_string s)
+let sexp_of_bytes s = Sexp.of_string (Cstruct.to_string s)
 
-type int8 = int
+type bytes = Cstruct.t 
 
-type int16 = int
+type int8 = int with sexp
 
-type int48 = int64
+type int16 = int with sexp
 
-type dlAddr = int48
+type int48 = int64 with sexp
 
-type dlTyp = int16
+type dlAddr = int48 with sexp
 
-type dlVlan = int16 option
+type dlTyp = int16 with sexp
 
-type dlVlanPcp = int8
+type dlVlan = int16 option with sexp
 
-type dlVlanDei = bool
+type dlVlanPcp = int8 with sexp
 
-type nwAddr = int32
+type dlVlanDei = bool with sexp
 
-type nwProto = int8
+type nwAddr = int32 with sexp
 
-type nwTos = int8
+type nwProto = int8 with sexp
 
-type tpPort = int16
+type nwTos = int8 with sexp
+
+type tpPort = int16 with sexp
 
 let mk_pseudo_header (src : nwAddr) (dst : nwAddr) (proto : int) (len : int) =
   (* XXX(seliopou): pseudo_header's allocated on every call. Given the usage

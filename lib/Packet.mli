@@ -13,46 +13,45 @@
 
 (** [bytes] is the type of arbitrary byte arrays, accessible via the Cstruct
 library. *)
-(* TODO(cole): Do we really need to expose Cstruct, or could this be opaque? *)
-type bytes = Cstruct.t
+type bytes = Cstruct.t with sexp
 
 (** [int8] is the type of 8-bit integers. *)
-type int8 = int
+type int8 = int with sexp
 
 (** [int16] is the type of 16-bit integers. *)
-type int16 = int
+type int16 = int with sexp
 
 (** [int48] is the type of 48-bit integers. *)
-type int48 = int64
+type int48 = int64 with sexp
 
 (** [dlAddr] is the type of Ethernet addresses. *)
-type dlAddr = int48
+type dlAddr = int48 with sexp
 
 (** [dlTyp] is the type of Ethernet frame types. *)
-type dlTyp = int16
+type dlTyp = int16 with sexp
 
 (** [dlVlan] is the type of VLAN identifiers.  A value of [None] indicates that
 no 802.1Q (VLAN) header is set, which is distinct from setting the VLAN to 0.
 *)
-type dlVlan = int16 option
+type dlVlan = int16 option with sexp
 
 (** [dlVlanPcp] is the type of 802.1Q (VLAN) priorities. *)
-type dlVlanPcp = int8
+type dlVlanPcp = int8 with sexp
 
 (** [dlVlanDei] is the type of 802.1Q (VLAN) drop eligible indicator. *)
-type dlVlanDei = bool
+type dlVlanDei = bool with sexp
 
 (** [nwAddr] is the type of IPv4 addresses. *)
-type nwAddr = int32
+type nwAddr = int32 with sexp
 
 (** [nwProto] is the type of IPv4 protocol numbers. *)
-type nwProto = int8
+type nwProto = int8 with sexp
 
 (** [nwTos] is the type of IPv4 types of service. *)
-type nwTos = int8
+type nwTos = int8 with sexp
 
 (** [tpPort] is the type of transport protocol ports. *)
-type tpPort = int16
+type tpPort = int16 with sexp
 
 (** TCP frame of a packet. *)
 module Tcp : sig
