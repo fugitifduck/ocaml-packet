@@ -63,8 +63,27 @@ let string_of_mac (x:int64) : string =
     (get_byte x 5) (get_byte x 4) (get_byte x 3)
     (get_byte x 2) (get_byte x 1) (get_byte x 0)
 
-let bytes_of_sexp s = Cstruct.of_string (Sexp.to_string s)
-let sexp_of_bytes s = Sexp.of_string (Cstruct.to_string s)
+let bytes_of_sexp s = 
+  match s with 
+  | Sexp.Atom w -> 
+    begin 
+      let n = String.length w in 
+      let buf = Cstruct.create n in 
+      for i = 0 to n - 1 do 
+	Cstruct.set_char buf i w.[i]
+      done;
+      buf
+    end
+  | _ -> 
+    failwith "bytes_of_sexp: expected Atom"
+
+let sexp_of_bytes s = 
+  let n = Cstruct.len s in 
+  let buf = Buffer.create n in 
+  for i = 0 to n - 1 do 
+    Buffer.add_char buf (Cstruct.get_char s i)
+  done;
+  Sexp.Atom (Buffer.contents buf)
 
 type bytes = Cstruct.t 
 
